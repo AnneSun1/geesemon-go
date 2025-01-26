@@ -99,6 +99,7 @@ def classify():
         os.remove(image_path)
 
         # Return the result
+        print(label)
         return jsonify({"label": label}), 200
     
     except Exception as e:

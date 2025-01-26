@@ -41,27 +41,33 @@ export default function CameraScreen() {
     setFacing(current => (current === 'back' ? 'front' : 'back'));
   }
 
-  
   const handleSubmitPhoto = async () => {
       if (photo) {
           const formData = new FormData();
 
-          // Add the photo (base64 or URI-based upload)
-          // formData.append("photo", {
-          //     uri: photo.uri,
-          //     name: 'photo.jpg',
-          //     type: 'image/jpeg',
-          // }, );
           console.log(photo.uri)
-          formData.append("photo", photo.uri.blob);
-          
+          const uri = await fetch(photo.uri);
+          const blob = await uri.blob();
+          formData.append("image", blob, "photo.jpg");
+          console.log(formData)
+          Image.getSize(
+            photo.uri,
+            (width, height) => {
+              console.log('Width:', width);
+              console.log('Height:', height);
+            },
+            (error) => {
+              console.error('Error loading image:', error);
+            }
+          );
+          console.log('FormData:', formData);
           try {
-              const response = await axios.post('http://127.0.0.0:3000/api/classify', {
-                  // headers: {
-                  //     'Content-Type': 'multipart/form-data',
-                  // },
-                  // body: formData,
-                  image: photo.uri
+              const response = await axios.post('http://10.36.133.193:3000/api/classify', 
+                formData,  
+                {
+                  headers: {
+                      'Content-Type': 'multipart/form-data',
+                  },
               });
               if (response) {
                   console.log('Photo uploaded successfully');
