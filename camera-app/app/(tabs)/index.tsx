@@ -52,14 +52,16 @@ export default function CameraScreen() {
           //     name: 'photo.jpg',
           //     type: 'image/jpeg',
           // }, );
+          console.log(photo.uri)
           formData.append("photo", photo.uri.blob);
           
           try {
-              const response = await axios.post('https://your-server-endpoint.com/upload', {
-                  headers: {
-                      'Content-Type': 'multipart/form-data',
-                  },
-                  body: formData,
+              const response = await axios.post('http://0.0.0.0:3000/photo', {
+                  // headers: {
+                  //     'Content-Type': 'multipart/form-data',
+                  // },
+                  // body: formData,
+                  image: photo.uri
               });
               if (response) {
                   console.log('Photo uploaded successfully');
