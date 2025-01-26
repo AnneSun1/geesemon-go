@@ -21,7 +21,7 @@ export default function CameraScreen() {
   const [permission, requestPermission] = useCameraPermissions();
   const [photo, setPhoto] = useState<any>(null);
   const cameraRef = useRef<CameraView | null>(null);
-  
+  const [label, setLabel] = useState<string>('')
   if (!permission) {
     // Camera permissions are still loading.
     return <View />;
@@ -50,19 +50,18 @@ export default function CameraScreen() {
           const blob = await uri.blob();
           formData.append("image", blob, "photo.jpg");
           console.log(formData)
-          // Image.getSize(
-          //   photo.uri,
-          //   (width, height) => {
-          //     console.log('Width:', width);
-          //     console.log('Height:', height);
-          //   },
-          //   (error) => {
-          //     console.error('Error loading image:', error);
-          //   }
-          // );
+
           
           try {
-              const response = await axios.post('http://geesemongo.yashasjindal.com:3000/api/classify', 
+              const response2 = await axios.post('http://geesemongo.yashasjindal.com:3000/api/classify', 
+                formData,  
+                {
+                  headers: {
+                      'Content-Type': 'multipart/form-data',
+                  },
+              });
+              
+              const response = await axios.post('http://127.0.0.1:3000/api/classify', 
                 formData,  
                 {
                   headers: {
@@ -72,6 +71,11 @@ export default function CameraScreen() {
               console.log('FormData:', formData);
               if (response) {
                   console.log('Photo uploaded successfully');
+                  if(response.data.label == "goose") {
+                    setLabel("goose")
+                  } else {
+                    setLabel("not goose")
+                  }
               } else {
                   console.error('Failed to upload photo');
               }

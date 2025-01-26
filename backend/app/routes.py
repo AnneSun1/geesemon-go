@@ -6,8 +6,8 @@ import torch
 from PIL import Image
 from inference_sdk import InferenceHTTPClient
 import math
-from flask_socketio import SocketIO
-from app import socketio
+# from app import socketio
+
 exp = 100
 lvl = 2
 num_of_photos = 0
@@ -83,6 +83,13 @@ def classify():
 
         if image.width < 250 or image.height < 250:
             label = local_prediction(input_tensor)
+            if label == "goose":
+                exp += 20
+                num_of_photos += 1
+                if (exp >= 100):
+                    lvl=2
+                if (exp >= 200):
+                    lvl=3
             return jsonify({"label": label}), 200
 
         elif image.width > 640 or image.height > 640:
@@ -130,7 +137,7 @@ def classify():
         # lvl =  math.floor(exp/5)
         # Return the result
         print(label)
-        socketio.emit('send-new-data', {"exp": exp, "lvl": lvl, "num_of_photos": num_of_photos})
+        # socketio.emit('send-new-data', {"exp": exp, "lvl": lvl, "num_of_photos": num_of_photos})
         return jsonify({"label": label, "exp": exp, "lvl": lvl, "num_of_photos": num_of_photos}), 200
     
     except Exception as e:
