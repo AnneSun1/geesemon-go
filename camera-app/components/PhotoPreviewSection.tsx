@@ -13,7 +13,7 @@ const PhotoPreviewSection = ({
     <SafeAreaView style={styles.container}>
         <View style={styles.box}>
             <Image
-                style={styles.previewConatiner}
+                style={styles.previewContainer}
                 source={{uri: 'data:image/jpg;base64,' + photo.base64}}
             />
         </View>
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: "center",
     },
-    previewConatiner: {
+    previewContainer: {
         width: '95%',
         height: '85%',
         borderRadius: 15

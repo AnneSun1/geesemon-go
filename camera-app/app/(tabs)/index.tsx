@@ -1,120 +1,4 @@
-// import { Button, StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
-
-// import { HelloWave } from '@/components/HelloWave';
-// import ParallaxScrollView from '@/components/ParallaxScrollView';
-// import { ThemedText } from '@/components/ThemedText';
-// import { ThemedView } from '@/components/ThemedView';
-// import { CameraView,Camera, CameraType, useCameraPermissions } from 'expo-camera';
-// import { useState, useRef, useEffect } from 'react';
-// import { captureScreen, captureRef } from "react-native-view-shot";
-
-// export default function HomeScreen() {
-//   const [facing, setFacing] = useState<CameraType>('back');
-//   const [permission, requestPermission] = useCameraPermissions();
-//   const [type, setType] = useState(Camera.Constants.Type.back);
-//   const imageRef = useRef<View>(null);
-
-//   // useEffect(() => {
-//   //   (async () => {
-//   //     const { status } = await Camera.requestCameraPermissionsAsync();
-//   //     requestPermission(status === "granted");
-//   //   })();
-//   // }, []);
-
-//   if (!permission) {
-//     // Camera permissions are still loading.
-//     return <View />;
-//   }
-
-//   if (!permission.granted) {
-//     // Camera permissions are not granted yet.
-//     return (
-//       <View style={styles.container}>
-//         <Text style={styles.message}>We need your permission to show the camera</Text>
-//         <Button onPress={requestPermission} title="grant permission" />
-//       </View>
-//     );
-//   }
-
-//   function toggleCameraFacing() {
-//     setFacing(current => (current === 'back' ? 'front' : 'back'));
-//   }
-
-//   const onSaveImageAsync = async () => {
-//     try {
-//       const localUri = await captureRef(imageRef, {
-//         height: 440,
-//         quality: 1,
-//       });
-
-//       if (localUri) {
-//         alert('Saved!');
-//       }
-//     } catch (e) {
-//       console.log(e);
-//     }
-//   };
-//   return (
-//       <View style={styles.container}>
-//          <View style={styles.buttonContainer}>
-//             {/* <TouchableOpacity style={styles.button} onPress={onSaveImageAsync}> */}
-//               <Text style={styles.text}>Take photo</Text>
-//             {/* </TouchableOpacity> */}
-//           </View>
-//       <View ref={imageRef} collapsable={false}>
-//         <CameraView style={styles.camera} facing={facing}>
-//         </CameraView>
-//     </View>
-//   </View>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   titleContainer: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     gap: 8,
-//   },
-//   stepContainer: {
-//     gap: 8,
-//     marginBottom: 8,
-//   },
-//   reactLogo: {
-//     height: 178,
-//     width: 290,
-//     bottom: 0,
-//     left: 0,
-//     position: 'absolute',
-//   },
-//   container: {
-//     flex: 1,
-//     justifyContent: 'center',
-//   },
-//   message: {
-//     textAlign: 'center',
-//     paddingBottom: 10,
-//   },
-//   camera: {
-//     flex: 1,
-//   },
-//   buttonContainer: {
-//     flex: 1,
-//     flexDirection: 'row',
-//     backgroundColor: 'transparent',
-//     margin: 64,
-//   },
-//   button: {
-//     flex: 1,
-//     alignSelf: 'flex-end',
-//     alignItems: 'center',
-//   },
-//   text: {
-//     fontSize: 24,
-//     fontWeight: 'bold',
-//     color: 'black',
-//   },
-// });
-import React, { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -123,12 +7,55 @@ import {
   Image,
   SafeAreaView,
   StatusBar,
+  Button
 } from 'react-native';
-
+import { CameraType, CameraView, useCameraPermissions } from 'expo-camera';
 const modes = ['Document', 'Video', 'Photo', 'Portrait', 'Night'];
+import PhotoPreviewSection from '@/components/PhotoPreviewSection';
+import { AntDesign } from '@expo/vector-icons';
 
 export default function CameraScreen() {
   const [selectedMode, setSelectedMode] = useState('Photo');
+ const [facing, setFacing] = useState<CameraType>('back');
+  const [permission, requestPermission] = useCameraPermissions();
+  const [photo, setPhoto] = useState<any>(null);
+  const cameraRef = useRef<CameraView | null>(null);
+  
+  if (!permission) {
+    // Camera permissions are still loading.
+    return <View />;
+  }
+
+  if (!permission.granted) {
+    // Camera permissions are not granted yet.
+    return (
+      <View style={styles.container}>
+        <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
+        <Button onPress={requestPermission} title="grant permission" />
+      </View>
+    );
+  }
+
+  function toggleCameraFacing() {
+    setFacing(current => (current === 'back' ? 'front' : 'back'));
+  }
+
+  const handleTakePhoto =  async () => {
+    if (cameraRef.current) {
+        const options = {
+            quality: 1,
+            base64: true,
+            exif: false,
+        };
+        const takedPhoto = await cameraRef.current.takePictureAsync(options);
+
+        setPhoto(takedPhoto);
+    }
+  }; 
+
+  const handleRetakePhoto = () => setPhoto(null);
+
+  if (photo) return <PhotoPreviewSection photo={photo} handleRetakePhoto={handleRetakePhoto} />
 
   return (
     <SafeAreaView style={styles.container}>
@@ -136,7 +63,18 @@ export default function CameraScreen() {
       
       {/* Camera Viewfinder */}
       <View style={styles.viewfinder}>
-        
+      <View style={styles.container}>
+      <CameraView style={styles.camera} facing={facing} ref={cameraRef}>
+        {/* <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
+            <AntDesign name='retweet' size={44} color='black' />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={handleTakePhoto}>
+            <AntDesign name='camera' size={44} color='black' />
+          </TouchableOpacity>
+        </View> */}
+      </CameraView>
+    </View>
         <View style={styles.focusFrame}>
           <View style={[styles.frameLine, styles.frameLineTop]} />
           <View style={[styles.frameLine, styles.frameLineRight]} />
@@ -167,17 +105,17 @@ export default function CameraScreen() {
 
       {/* Bottom Controls */}
       <View style={styles.controls}>
-        <TouchableOpacity style={styles.thumbnailButton}>
-          <View style={styles.thumbnail} />
-        </TouchableOpacity>
         
-        <TouchableOpacity style={styles.captureButton}>
+        <TouchableOpacity style={styles.flipButton}>
+          <View style={styles.thumbnailButton} />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.captureButton} onPress={handleTakePhoto}>
           <View style={styles.captureButtonInner} />
         </TouchableOpacity>
-
-        <TouchableOpacity style={styles.flipButton}>
-          <View style={styles.flipButtonIcon} />
+        <TouchableOpacity style={styles.thumbnailButton} onPress={toggleCameraFacing}>
+        <AntDesign name='retweet' size={44} color='white' />
         </TouchableOpacity>
+      
       </View>
     </SafeAreaView>
   );
@@ -257,14 +195,14 @@ const styles = StyleSheet.create({
   thumbnailButton: {
     width: 40,
     height: 40,
-    borderRadius: 20,
+    // borderRadius: 20,
     overflow: 'hidden',
   },
   thumbnail: {
     width: '100%',
     height: '100%',
     backgroundColor: '#444',
-    borderRadius: 20,
+    // borderRadius: 20,
   },
   captureButton: {
     width: 70,
@@ -294,4 +232,27 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#FFF',
   },
+  camera: {
+    flex: 1,
+  },
+  buttonContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: 'transparent',
+    margin: 64,
+  },
+  button: {
+    flex: 1,
+    alignSelf: 'flex-end',
+    alignItems: 'center',
+    marginHorizontal: 10,
+    backgroundColor: 'gray',
+    borderRadius: 10,
+  },
+  text: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: 'white',
+  },
 });
+
