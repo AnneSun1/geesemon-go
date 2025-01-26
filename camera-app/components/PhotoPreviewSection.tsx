@@ -30,12 +30,23 @@ const PhotoPreviewSection = ({
                 <Text>Submit</Text>
             </TouchableOpacity>
         </View>
+        <View style={styles.invisButton}>
+            <TouchableOpacity style={styles.invisButton} onPress={handleSubmitPhoto}>
+                <Text>goose</Text>
+            </TouchableOpacity>
+        </View>
+        <View style={styles.invisButton}>
+            <TouchableOpacity style={styles.invisButton} onPress={handleSubmitPhoto}>
+                <Text>not goose</Text>
+            </TouchableOpacity>
+        </View>
     </SafeAreaView>
 );
 
 const styles = StyleSheet.create({
     container:{
         flex: 1,
+        height: 1000,
         backgroundColor: 'black',
         alignItems: 'center',
         justifyContent: 'center',
@@ -44,6 +55,7 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         padding: 1,
         width: '95%',
+        // height: '85%',
         backgroundColor: 'darkgray',
         justifyContent: 'center',
         alignItems: "center",
@@ -65,7 +77,13 @@ const styles = StyleSheet.create({
         padding: 10,
         alignItems: 'center',
         justifyContent: 'center',
-    }
+    },
+    invisButton: {
+        marginTop: '4%',
+        flexDirection: 'row',
+        justifyContent: "center",
+        width: '100%',
+    },
 
 });
 

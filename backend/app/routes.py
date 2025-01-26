@@ -163,9 +163,11 @@ def classify():
         # lvl =  math.floor(exp/5)
         # Return the result
         print(label)
+        print(exp)
+        print(lvl)
         from app import SocketIO
-        SocketIO.emit('send-new-data', {"exp": exp, "lvl": lvl, "num_of_photos": num_of_photos})
-        return jsonify({"label": label, "exp": exp, "lvl": lvl, "num_of_photos": num_of_photos}), 200
+        SocketIO.emit('send-new-data', {"exp": exp, "lvl": lvl, "num_of_photos": num_of_photos, "label": label})
+        return jsonify({ "exp": exp, "lvl": lvl, "num_of_photos": num_of_photos, "label": label}), 200
     
     except Exception as e:
         return jsonify({"error": str(e)}), 500

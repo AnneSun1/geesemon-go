@@ -53,13 +53,13 @@ export default function CameraScreen() {
 
           
           try {
-              const response2 = await axios.post('http://geesemongo.yashasjindal.com:3000/api/classify', 
-                formData,  
-                {
-                  headers: {
-                      'Content-Type': 'multipart/form-data',
-                  },
-              });
+              // const response2 = await axios.post('http://geesemongo.yashasjindal.com:3000/api/classify', 
+              //   formData,  
+              //   {
+              //     headers: {
+              //         'Content-Type': 'multipart/form-data',
+              //     },
+              // });
               
               const response = await axios.post('http://127.0.0.1:3000/api/classify', 
                 formData,  

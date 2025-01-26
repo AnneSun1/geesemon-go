@@ -1,7 +1,7 @@
 import type { Route } from "./+types/home";
 import Welcome from "./welcome/welcome";
 // import { Goose } from "./goose/goose";
-
+// import { GooseProvider } from '../context/gooseContext';
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -11,5 +11,9 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Home() {
-  return <Welcome />;
+  return (
+    // <GooseProvider>
+      <Welcome />
+    // </GooseProvider>
+)
 }

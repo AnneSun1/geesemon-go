@@ -4,12 +4,15 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { motion, AnimatePresence } from "framer-motion"
 import { io } from 'socket.io-client';
+// import { useGoose } from '../../context/gooseContext';
+
 // let exp = 20;
 // let level = 50;
 interface data {
   exp: number;
   lvl: number;
   num_of_photos: number;
+  label: string;
 }
 export default function Goose() {
   const textArr = ["Right now, Geus is a lowly clumsy hunk of metal who looks nothing like a goose. Help him learn how to be a goose by taking pictures of geese at UW?",
@@ -20,9 +23,9 @@ export default function Goose() {
   let [text, setText] = useState(textArr[0])
   let [exp, setExp] = useState(0);
   let [level, setLevel] = useState(0);
-  const [message, setMessage] = useState('');
-  const [socket, setSocket] = useState(null);
-
+  const [prediction, setPrediction] = useState("")
+  const [hasPrediction, setHasPrediction] = useState(false)
+  
   const [image, setImage] = useState("./robot.png");
   const getExp = async () => {
     const response = await axios.get('http://127.0.0.1:3000/api/get-data')
@@ -34,21 +37,23 @@ export default function Goose() {
   const navigate = useNavigate()
   const handleClick = () => {
     console.log("hi")
-    // getExp();
+    getExp();
     setBar(bar+20)
     if (bar + 20>=100){
       setBar(0)
     }
     setExp(exp + 20)
   }
-
+  useEffect(() => {
+    setHasPrediction(false)
+  },[])
   // reroutes when geus is max level
   useEffect(() => {
     if (exp >= 300) {
       navigate("/end");
     }
   }, [exp, navigate]);
-  
+
   useEffect(() => {
 
     if (exp >= 100 && exp < 200) {
@@ -77,6 +82,12 @@ export default function Goose() {
         console.log('Received message:', data);
         setExp(data.exp);  // Update the state with received message
         setLevel(data.lvl);
+        if (data.label == "goose"){
+          setPrediction("It's a Goose!");
+        } else {
+          setPrediction("It's not a Goose!");
+        }
+        setHasPrediction(true)
       });
   
     
@@ -117,15 +128,22 @@ export default function Goose() {
           <Link to="/map" className="px-4 py-2 bg-black text-white font-pixel rounded-lg hover:bg-gray-800 transition-colors" onClick={handlePostData}>
             MAP
           </Link>
+          
         </nav>
-
+      
+      
         {/* Main Character */}
-        <div className="absolute left-1/2 top-[65%] transform -translate-x-1/2 -translate-y-1/2 hover:scale-125" onClick={handleClick}>
+        <div className="absolute left-1/2 top-[65%] transform -translate-x-1/2 -translate-y-1/2" >
+        { hasPrediction ? 
+        <div className="bg-white border-4 border-black text-black text-center rounded-md">{prediction}</div> : null }
+
+        <div className=" hover:scale-125" onClick={handleClick}>
           <img
             src={image} 
             className="w-80 h-80"
             alt="Goose"
           />
+          </div>
         </div>
 
         {/* Status Bars */}

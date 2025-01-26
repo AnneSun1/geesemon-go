@@ -24,7 +24,7 @@ export default function TabLayout() {
             position: 'absolute',
             display: 'none'
           },
-          default: {},
+          default: {display: 'none'},
         }),
         
       }}
