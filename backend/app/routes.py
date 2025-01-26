@@ -37,6 +37,7 @@ model.eval()
 def local_prediction(input_tensor)->str:
     with torch.no_grad():
         output = model(input_tensor)
+        print(output)
         local_prediction = (output.squeeze() > 0.5).float()
         if local_prediction == 0:
             return "goose"
@@ -73,7 +74,7 @@ def classify():
             return jsonify({"label": label}), 200
 
         elif image.width > 640 or image.height > 640:
-            image = image.resize((640, 640), Image.ANTIALIAS)
+            image = image.resize((640, 640), Image.Resampling.LANCZOS)
             image.save(image_path)
 
         # External prediction
