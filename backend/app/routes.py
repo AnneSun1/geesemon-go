@@ -16,16 +16,8 @@ CLIENT = InferenceHTTPClient(
 )
 
 # External prediction function
-def external_prediction(image_path:str)->int:
-    predictions = CLIENT.infer(image_path, model_id="canadian-geese-detector/1")["predictions"]
-    length = len(predictions)
-    if length == 0:
-        return 0
-    val = 1
-    for item in predictions:
-        if item["class"] == "Baby Canada Goose":
-            return 2
-    return val
+def external_prediction(image_path:str)->list[dict]:
+    return CLIENT.infer(image_path, model_id="canadian-geese-detector/1")["predictions"]
 
 # Load the local model
 device = torch.device('cuda' if torch.cuda.is_available() else 'mps' if torch.backends.mps.is_built() else 'cpu')
@@ -78,11 +70,27 @@ def classify():
             image.save(image_path)
 
         # External prediction
-        label = local_prediction(input_tensor) #"label goose if goose and not goose is not goose"
-        external_pred:int = external_prediction(image_path) #0 if no geese, 1 if only adult geese, 2 if baby goose spotted
-        if external_pred == 2:
+        local_pred = local_prediction(input_tensor) #label goose if goose and not goose if not goose
+        lst_predictions = external_prediction(image_path)
+
+        external_pred = "not goose"
+        max_confidence = 0
+        for item in lst_predictions:
+            if item["class"] == "Baby Canada Goose" and (item["confidence"]) > 0.65:
+                external_pred = "baby goose"
+                max_confidence = item["confidence"]
+                break
+            if item["confidence"] > max_confidence:
+                external_pred = "goose"
+                max_confidence = item["confidence"]
+        
+        if (external_pred == "baby goose") and (local_pred == "not goose") and ((max_confidence - 0.25) > 0.5):
             label = "baby goose"
-        elif external_pred == 1 or label == "goose":
+        elif (external_pred == "goose") and (local_pred == "not goose") and ((max_confidence - 0.25) > 0.5):
+            label = "goose"
+        elif (external_pred == "not goose") and (local_pred == "goose"):
+            label = "not goose"
+        elif (external_pred == "goose") and (local_pred == "goose"):
             label = "goose"
         else:
             label = "not goose"
