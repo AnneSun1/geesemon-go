@@ -1,6 +1,7 @@
 import NavHeader from "../components/nav-header"
 import "./app.css"
 
+
 export default function App() {
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-b from-[#001233] to-[#003366]">
