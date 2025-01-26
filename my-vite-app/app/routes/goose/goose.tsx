@@ -3,10 +3,14 @@ import { Link } from "react-router-dom";  // Import from react-router-dom for co
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { motion, AnimatePresence } from "framer-motion"
-
+import { io } from 'socket.io-client';
 // let exp = 20;
 // let level = 50;
-
+interface data {
+  exp: number;
+  lvl: number;
+  num_of_photos: number;
+}
 export default function Goose() {
   const textArr = ["Right now, Geus is a lowly clumsy hunk of metal who looks nothing like a goose. Help him learn how to be a goose by taking pictures of geese at UW?",
     "Zooweemama! Looks like your pictures really helped Geus transform into a goose! But… he's still lacking some of that rabid aggression and general unpleasantness. Keep taking pictures of geese to help Geus on his journey!",
@@ -15,6 +19,9 @@ export default function Goose() {
   let [text, setText] = useState(textArr[0])
   let [exp, setExp] = useState(0);
   let [level, setLevel] = useState(0);
+  const [message, setMessage] = useState('');
+  const [socket, setSocket] = useState(null);
+
   const [image, setImage] = useState("./robot.png");
   const getExp = async () => {
     const response = await axios.get('http://127.0.0.1:3000/api/get-data')
@@ -40,7 +47,28 @@ export default function Goose() {
       setLevel(0); // Reset level if below 100
     }
   }, [exp]);  
-
+    
+  
+    useEffect(() => {
+      
+      // Connect to the WebSocket server
+      const socket = io('http://127.0.0.1:3000');  // Replace with your server URL
+  
+      // Set the socket instance in state
+  
+      // Listen for messages from the server
+      socket.on('send-new-data', (data: data) => {
+        console.log('Received message:', data);
+        setExp(data.exp);  // Update the state with received message
+        setLevel(data.lvl);
+      });
+  
+    
+      // Clean up when the component unmounts
+      return () => {
+        socket.disconnect();
+      };
+    }, []);
 
   return (
     <main className="w-full min-h-screen bg-sky-200 flex items-center justify-center p-4">

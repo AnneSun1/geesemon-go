@@ -6,7 +6,8 @@ import torch
 from PIL import Image
 from inference_sdk import InferenceHTTPClient
 import math
-
+from flask_socketio import SocketIO
+from app import socketio
 exp = 100
 lvl = 2
 num_of_photos = 0
@@ -40,8 +41,16 @@ def local_prediction(input_tensor)->str:
             return "goose"
         else:
             return "not goose"
+        
 
-# @api.route("/get-data", methods=["GET"])
+
+# @socketio.on('picture-taken')
+# def handle_message():
+#     global exp, lvl, num_of_photos
+#     data = {"exp": exp, "lvl": lvl, "num_of_photos": num_of_photos}
+#     print("Picture Taken: ", data)
+#     socketio.send(data)
+
 @api.route("/amigoated", methods=["GET"])
 def amigoated():
     return jsonify({"status": "Server is running"}), 200
@@ -121,6 +130,7 @@ def classify():
         # lvl =  math.floor(exp/5)
         # Return the result
         print(label)
+        socketio.emit('send-new-data', {"exp": exp, "lvl": lvl, "num_of_photos": num_of_photos})
         return jsonify({"label": label, "exp": exp, "lvl": lvl, "num_of_photos": num_of_photos}), 200
     
     except Exception as e:
