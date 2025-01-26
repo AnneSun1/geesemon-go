@@ -1,5 +1,4 @@
-fastapi
-tensorflow
-numpy
-uvicorn 
-pillow
+flask
+Pillow
+torch
+torchvision
