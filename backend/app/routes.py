@@ -5,6 +5,11 @@ from app.utils import transform
 import torch
 from PIL import Image
 from inference_sdk import InferenceHTTPClient
+import math
+
+xp = 5
+lvl = 1
+num_of_photos = 0
 
 # Blueprint for API routes
 api = Blueprint("api", __name__)
@@ -85,23 +90,30 @@ def classify():
                 external_pred = "goose"
                 max_confidence = item["confidence"]
         
-        if (external_pred == "baby goose") and (local_pred == "not goose") and ((max_confidence - 0.25) > 0.5):
+        if (external_pred == "baby goose") and (local_pred == "not goose") and ((max_confidence - 0.15) > 0.5):
             label = "baby goose"
-        elif (external_pred == "goose") and (local_pred == "not goose") and ((max_confidence - 0.25) > 0.5):
+            xp += 2
+            num_of_photos += 1
+        elif (external_pred == "goose") and (local_pred == "not goose") and ((max_confidence - 0.15) > 0.5):
             label = "goose"
+            xp += 1
+            num_of_photos += 1
         elif (external_pred == "not goose") and (local_pred == "goose"):
             label = "not goose"
         elif (external_pred == "goose") and (local_pred == "goose"):
             label = "goose"
+            xp += 1
+            num_of_photos += 1
         else:
             label = "not goose"
 
         # Remove temporary file
         os.remove(image_path)
 
+        lvl =  math.floor(xp/5)
         # Return the result
         print(label)
-        return jsonify({"label": label}), 200
+        return jsonify({"label": label, "xp": xp, "lvl": lvl, "num_of_photos": num_of_photos}), 200
     
     except Exception as e:
         return jsonify({"error": str(e)}), 500
