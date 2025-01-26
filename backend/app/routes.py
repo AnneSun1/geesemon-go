@@ -6,7 +6,7 @@ import torch
 from PIL import Image
 from inference_sdk import InferenceHTTPClient
 import math
-# from app import socketio
+from app.extensions import SocketIO
 
 exp = 0
 lvl = 0
@@ -163,7 +163,8 @@ def classify():
         # lvl =  math.floor(exp/5)
         # Return the result
         print(label)
-        # socketio.emit('send-new-data', {"exp": exp, "lvl": lvl, "num_of_photos": num_of_photos})
+        from app import SocketIO
+        SocketIO.emit('send-new-data', {"exp": exp, "lvl": lvl, "num_of_photos": num_of_photos})
         return jsonify({"label": label, "exp": exp, "lvl": lvl, "num_of_photos": num_of_photos}), 200
     
     except Exception as e:
