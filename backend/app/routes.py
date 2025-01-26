@@ -49,6 +49,7 @@ def amigoated():
 # Endpoint for image classification
 @api.route("/classify", methods=["POST"])
 def classify():
+    global xp, num_of_photos, lvl
     try:
         # Check if an image is uploaded
         if "image" not in request.files:
