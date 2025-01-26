@@ -44,7 +44,7 @@ def local_prediction(input_tensor)->str:
 # @api.route("/get-data", methods=["GET"])
 @api.route("/amigoated", methods=["GET"])
 def amigoated():
-    return jsonify({"status": "Server is running"}), 200
+    return jsonify({"status": "Server is running", "xp": xp, "lvl": lvl, "num_of_photos": num_of_photos}), 200
 
 # Endpoint for image classification
 @api.route("/classify", methods=["POST"])
