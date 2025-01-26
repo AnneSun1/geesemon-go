@@ -7,8 +7,8 @@ from PIL import Image
 from inference_sdk import InferenceHTTPClient
 import math
 
-xp = 5
-lvl = 1
+exp = 100
+lvl = 2
 num_of_photos = 0
 
 # Blueprint for API routes
@@ -21,7 +21,7 @@ CLIENT = InferenceHTTPClient(
 )
 
 # External prediction function
-def external_prediction(image_path:str)->list[dict]:
+def external_prediction(image_path:str):
     return CLIENT.infer(image_path, model_id="canadian-geese-detector/1")["predictions"]
 
 # Load the local model
@@ -44,12 +44,16 @@ def local_prediction(input_tensor)->str:
 # @api.route("/get-data", methods=["GET"])
 @api.route("/amigoated", methods=["GET"])
 def amigoated():
-    return jsonify({"status": "Server is running", "xp": xp, "lvl": lvl, "num_of_photos": num_of_photos}), 200
+    return jsonify({"status": "Server is running"}), 200
+
+@api.route("/get-data", methods=["GET"])
+def get_data():
+    return jsonify({"exp": exp, "lvl": lvl, "num_of_photos": num_of_photos}), 200
 
 # Endpoint for image classification
 @api.route("/classify", methods=["POST"])
 def classify():
-    global xp, num_of_photos, lvl
+    global exp, num_of_photos, lvl
     try:
         # Check if an image is uploaded
         if "image" not in request.files:
@@ -93,28 +97,31 @@ def classify():
         
         if (external_pred == "baby goose") and (local_pred == "not goose") and ((max_confidence - 0.15) > 0.5):
             label = "baby goose"
-            xp += 2
+            exp += 40
             num_of_photos += 1
         elif (external_pred == "goose") and (local_pred == "not goose") and ((max_confidence - 0.15) > 0.5):
             label = "goose"
-            xp += 1
+            exp += 20
             num_of_photos += 1
         elif (external_pred == "not goose") and (local_pred == "goose"):
             label = "not goose"
         elif (external_pred == "goose") and (local_pred == "goose"):
             label = "goose"
-            xp += 1
+            exp += 20
             num_of_photos += 1
         else:
             label = "not goose"
 
         # Remove temporary file
         os.remove(image_path)
-
-        lvl =  math.floor(xp/5)
+        if (exp >= 100):
+            lvl=2
+        if (exp >= 200):
+            lvl=3
+        # lvl =  math.floor(exp/5)
         # Return the result
         print(label)
-        return jsonify({"label": label, "xp": xp, "lvl": lvl, "num_of_photos": num_of_photos}), 200
+        return jsonify({"label": label, "exp": exp, "lvl": lvl, "num_of_photos": num_of_photos}), 200
     
     except Exception as e:
         return jsonify({"error": str(e)}), 500
