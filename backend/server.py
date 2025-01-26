@@ -15,6 +15,7 @@ app = FastAPI()
 
 origins = [
     "http://localhost:5173",
+    "http://localhost:8081"
 ]
 
 app.add_middleware(
@@ -30,6 +31,13 @@ app.add_middleware(
 @app.get('/')
 def reed_root(): #root
     return {'message': 'Welcome to Wastely'}
+
+@app.post('/photo')
+async def show(image: UploadFile):
+    image_bytes = await image.read()
+    with open("uploaded_image.jpg", "wb") as f:
+        f.write(image_bytes)
+    return {'works': 'hi'}
 
 # @app.post('/camera-image')
 # async def predict(image: UploadFile):

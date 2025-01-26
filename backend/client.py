@@ -10,7 +10,7 @@ with open("./carrot.jpg", "rb") as f:
 file_obj = BytesIO(file_content)
 # data = {'image': [] }
 
-url = 'http://0.0.0.0:8000/predict/'
+url = 'http://0.0.0.0:8080/predict/'
 
 # data = json.dumps(data)
 response = requests.post(url, file_obj)
