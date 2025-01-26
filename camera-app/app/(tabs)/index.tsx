@@ -50,17 +50,17 @@ export default function CameraScreen() {
           const blob = await uri.blob();
           formData.append("image", blob, "photo.jpg");
           console.log(formData)
-          Image.getSize(
-            photo.uri,
-            (width, height) => {
-              console.log('Width:', width);
-              console.log('Height:', height);
-            },
-            (error) => {
-              console.error('Error loading image:', error);
-            }
-          );
-          console.log('FormData:', formData);
+          // Image.getSize(
+          //   photo.uri,
+          //   (width, height) => {
+          //     console.log('Width:', width);
+          //     console.log('Height:', height);
+          //   },
+          //   (error) => {
+          //     console.error('Error loading image:', error);
+          //   }
+          // );
+          
           try {
               const response = await axios.post('http://10.36.133.193:3000/api/classify', 
                 formData,  
@@ -69,6 +69,7 @@ export default function CameraScreen() {
                       'Content-Type': 'multipart/form-data',
                   },
               });
+              console.log('FormData:', formData);
               if (response) {
                   console.log('Photo uploaded successfully');
               } else {

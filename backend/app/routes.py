@@ -36,6 +36,7 @@ def local_prediction(input_tensor)->str:
         else:
             return "not goose"
 
+# @api.route("/get-data", methods=["GET"])
 @api.route("/amigoated", methods=["GET"])
 def amigoated():
     return jsonify({"status": "Server is running"}), 200
