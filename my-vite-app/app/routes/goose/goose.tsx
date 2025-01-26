@@ -16,6 +16,7 @@ export default function Goose() {
     "Zooweemama! Looks like your pictures really helped Geus transform into a goose! But… he's still lacking some of that rabid aggression and general unpleasantness. Keep taking pictures of geese to help Geus on his journey!",
     "Wowee! Geus really has being a goose figured out! He looks like an actual goose now! Congrats on helping Geus in their transformation! Big ups!"
   ]
+  let [bar, setBar] = useState(0)
   let [text, setText] = useState(textArr[0])
   let [exp, setExp] = useState(0);
   let [level, setLevel] = useState(0);
@@ -33,8 +34,15 @@ export default function Goose() {
   const handleClick = () => {
     console.log("hi")
     getExp();
+    setBar(bar+20)
+    setExp(exp + 20)
+    if (bar >=100){
+      setBar(0)
+    }
   }
+
   useEffect(() => {
+
     if (exp >= 100 && exp < 200) {
       setLevel(50); // Set level to 50
       setImage("./robot_goose.png")
@@ -46,7 +54,7 @@ export default function Goose() {
     } else {
       setLevel(0); // Reset level if below 100
     }
-  }, [exp]);  
+  }, [exp, bar]);  
     
   
     useEffect(() => {
@@ -107,17 +115,17 @@ export default function Goose() {
         </div>
 
         {/* Status Bars */}
-        <StatusBars exp={exp} level={level} />
+        <StatusBars bar={bar} level={level} />
       </div>
     </main>
   );
 }
 
-function StatusBars({ exp, level }: { exp: number, level: number }) {
+function StatusBars({ bar, level }: { bar: number, level: number }) {
   return (
     <div className="absolute bottom-4 right-4 flex flex-col gap-4 items-start">
       {/* Stack the labels and bars vertically with spacing, aligned to the left */}
-      <StatusBar label="EXP" value={exp} color="bg-yellow-400" />
+      <StatusBar label="EXP" value={bar} color="bg-yellow-400" />
       <StatusBar label="LVL" value={level} color="bg-green-400" />
     </div>
   );
