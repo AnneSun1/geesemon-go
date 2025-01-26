@@ -1,7 +1,7 @@
 import PhotoPreviewSection from '../../components/PhotoPreviewSection';
 import { AntDesign } from '@expo/vector-icons';
 import { CameraType, CameraView, useCameraPermissions } from 'expo-camera';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function Camera() {
@@ -9,6 +9,39 @@ export default function Camera() {
   const [permission, requestPermission] = useCameraPermissions();
   const [photo, setPhoto] = useState<any>(null);
   const cameraRef = useRef<CameraView | null>(null);
+  useEffect(() => {
+    const sendPhotoToServer = async () => {
+      if (photo) {
+          const formData = new FormData();
+
+          // Add the photo (base64 or URI-based upload)
+          // formData.append("photo", {
+          //     uri: photo.uri,
+          //     name: 'photo.jpg',
+          //     type: 'image/jpeg',
+          // }, );
+          formData.append("photo", photo.uri.blob);
+          
+          try {
+              const response = await fetch('https://your-server-endpoint.com/upload', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'multipart/form-data',
+                  },
+                  body: formData,
+              });
+
+              const result = await response.json();
+              if (response.ok) {
+                  console.log('Photo uploaded successfully', result);
+              } else {
+                  console.error('Failed to upload photo', result);
+              }
+          } catch (error) {
+              console.error('Error uploading photo', error);
+          }
+      }}
+  }, [photo])
 
   if (!permission) {
     // Camera permissions are still loading.
