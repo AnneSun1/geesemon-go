@@ -2,3 +2,4 @@ flask
 Pillow
 torch
 torchvision
+inference_sdk
