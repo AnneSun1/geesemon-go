@@ -44,6 +44,7 @@ def local_prediction(input_tensor)->str:
         else:
             return "not goose"
 
+# @api.route("/get-data", methods=["GET"])
 @api.route("/amigoated", methods=["GET"])
 def amigoated():
     return jsonify({"status": "Server is running"}), 200
@@ -82,7 +83,7 @@ def classify():
         external_pred:int = external_prediction(image_path) #0 if no geese, 1 if only adult geese, 2 if baby goose spotted
         if external_pred == 2:
             label = "baby goose"
-        elif external_pred == 1 or label == "goose":
+        elif external_pred == 1:
             label = "goose"
         else:
             label = "not goose"
