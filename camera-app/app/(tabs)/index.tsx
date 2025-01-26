@@ -56,7 +56,7 @@ export default function CameraScreen() {
           formData.append("photo", photo.uri.blob);
           
           try {
-              const response = await axios.post('http://0.0.0.0:3000/photo', {
+              const response = await axios.post('http://127.0.0.0:3000/api/classify', {
                   // headers: {
                   //     'Content-Type': 'multipart/form-data',
                   // },
