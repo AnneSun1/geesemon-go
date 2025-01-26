@@ -13,6 +13,7 @@ import { CameraType, CameraView, useCameraPermissions } from 'expo-camera';
 const modes = ['Document', 'Video', 'Photo', 'Portrait', 'Night'];
 import PhotoPreviewSection from '@/components/PhotoPreviewSection';
 import { AntDesign } from '@expo/vector-icons';
+import axios from 'axios';
 
 export default function CameraScreen() {
   const [selectedMode, setSelectedMode] = useState('Photo');
@@ -40,6 +41,37 @@ export default function CameraScreen() {
     setFacing(current => (current === 'back' ? 'front' : 'back'));
   }
 
+  
+  const handleSubmitPhoto = async () => {
+      if (photo) {
+          const formData = new FormData();
+
+          // Add the photo (base64 or URI-based upload)
+          // formData.append("photo", {
+          //     uri: photo.uri,
+          //     name: 'photo.jpg',
+          //     type: 'image/jpeg',
+          // }, );
+          formData.append("photo", photo.uri.blob);
+          
+          try {
+              const response = await axios.post('https://your-server-endpoint.com/upload', {
+                  headers: {
+                      'Content-Type': 'multipart/form-data',
+                  },
+                  body: formData,
+              });
+              if (response) {
+                  console.log('Photo uploaded successfully');
+              } else {
+                  console.error('Failed to upload photo');
+              }
+          } catch (error) {
+              console.error('Error uploading photo');
+          }
+      }
+  }
+
   const handleTakePhoto =  async () => {
     if (cameraRef.current) {
         const options = {
@@ -55,7 +87,7 @@ export default function CameraScreen() {
 
   const handleRetakePhoto = () => setPhoto(null);
 
-  if (photo) return <PhotoPreviewSection photo={photo} handleRetakePhoto={handleRetakePhoto} />
+  if (photo) return <PhotoPreviewSection photo={photo} handleRetakePhoto={handleRetakePhoto} handleSubmitPhoto={handleSubmitPhoto}/>
 
   return (
     <SafeAreaView style={styles.container}>

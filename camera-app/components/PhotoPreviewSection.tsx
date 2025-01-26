@@ -1,14 +1,16 @@
 import { Fontisto } from '@expo/vector-icons';
 import { CameraCapturedPicture } from 'expo-camera';
 import React from 'react'
-import { TouchableOpacity, SafeAreaView, Image, StyleSheet, View } from 'react-native';
+import { TouchableOpacity, SafeAreaView, Image, StyleSheet, View, Text } from 'react-native';
 
 const PhotoPreviewSection = ({
     photo,
-    handleRetakePhoto
+    handleRetakePhoto,
+    handleSubmitPhoto
 }: {
     photo: CameraCapturedPicture;
     handleRetakePhoto: () => void;
+    handleSubmitPhoto: () =>  void;
 }) => (
     <SafeAreaView style={styles.container}>
         <View style={styles.box}>
@@ -21,6 +23,11 @@ const PhotoPreviewSection = ({
         <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.button} onPress={handleRetakePhoto}>
                 <Fontisto name='trash' size={36} color='black' />
+            </TouchableOpacity>
+        </View>
+        <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.button} onPress={handleSubmitPhoto}>
+                <Text>Submit</Text>
             </TouchableOpacity>
         </View>
     </SafeAreaView>
