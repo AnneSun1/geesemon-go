@@ -13,6 +13,7 @@ import { CameraType, CameraView, useCameraPermissions } from 'expo-camera';
 const modes = ['Document', 'Video', 'Photo', 'Portrait', 'Night'];
 import PhotoPreviewSection from '@/components/PhotoPreviewSection';
 import { AntDesign } from '@expo/vector-icons';
+import axios from 'axios';
 
 export default function CameraScreen() {
   const [selectedMode, setSelectedMode] = useState('Photo');
@@ -40,6 +41,46 @@ export default function CameraScreen() {
     setFacing(current => (current === 'back' ? 'front' : 'back'));
   }
 
+  const handleSubmitPhoto = async () => {
+      if (photo) {
+          const formData = new FormData();
+
+          console.log(photo.uri)
+          const uri = await fetch(photo.uri);
+          const blob = await uri.blob();
+          formData.append("image", blob, "photo.jpg");
+          console.log(formData)
+          // Image.getSize(
+          //   photo.uri,
+          //   (width, height) => {
+          //     console.log('Width:', width);
+          //     console.log('Height:', height);
+          //   },
+          //   (error) => {
+          //     console.error('Error loading image:', error);
+          //   }
+          // );
+          
+          try {
+              const response = await axios.post('http://10.36.133.193:3000/api/classify', 
+                formData,  
+                {
+                  headers: {
+                      'Content-Type': 'multipart/form-data',
+                  },
+              });
+              console.log('FormData:', formData);
+              if (response) {
+                  console.log('Photo uploaded successfully');
+              } else {
+                  console.error('Failed to upload photo');
+              }
+          } catch (error) {
+              console.error('Error uploading photo');
+          }
+      }
+  }
+
   const handleTakePhoto =  async () => {
     if (cameraRef.current) {
         const options = {
@@ -55,7 +96,7 @@ export default function CameraScreen() {
 
   const handleRetakePhoto = () => setPhoto(null);
 
-  if (photo) return <PhotoPreviewSection photo={photo} handleRetakePhoto={handleRetakePhoto} />
+  if (photo) return <PhotoPreviewSection photo={photo} handleRetakePhoto={handleRetakePhoto} handleSubmitPhoto={handleSubmitPhoto}/>
 
   return (
     <SafeAreaView style={styles.container}>
