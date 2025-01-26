@@ -8,8 +8,8 @@ from inference_sdk import InferenceHTTPClient
 import math
 # from app import socketio
 
-exp = 100
-lvl = 2
+exp = 0
+lvl = 0
 num_of_photos = 0
 
 # Blueprint for API routes
@@ -58,6 +58,32 @@ def amigoated():
 @api.route("/get-data", methods=["GET"])
 def get_data():
     return jsonify({"exp": exp, "lvl": lvl, "num_of_photos": num_of_photos}), 200
+
+@api.route("/post-data", methods=["POST"])
+def post_data():
+    global exp,lvl,num_of_photos
+    # Ensure the request contains JSON data
+    # if not request.is_json:
+    #     return jsonify({"error": "Request body must be JSON"}), 400
+
+    # Parse JSON data from the request body
+    data = request.get_json()
+    print(data)
+    new_exp = data.get("exp")
+    new_lvl = data.get("lvl")
+    new_num_of_photos = data.get("num_of_photos")
+
+    # Validate the input fields
+    if not isinstance(exp, int) or not isinstance(lvl, int) or not isinstance(num_of_photos, int):
+        return jsonify({"error": "Invalid input types. All fields must be integers."}), 400
+
+    # Update the data store
+    exp = new_exp
+    lvl = new_lvl
+    num_of_photos = new_num_of_photos
+
+    return jsonify({"message": "Data updated successfully"}), 200
+
 
 # Endpoint for image classification
 @api.route("/classify", methods=["POST"])

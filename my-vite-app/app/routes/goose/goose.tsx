@@ -1,5 +1,5 @@
 
-import { Link } from "react-router-dom";  // Import from react-router-dom for correct routing
+import { Link, useNavigate } from "react-router-dom";  // Import from react-router-dom for correct routing
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { motion, AnimatePresence } from "framer-motion"
@@ -31,16 +31,24 @@ export default function Goose() {
     setLevel(response.data.level)
     // setExp(response.data)
   }
+  const navigate = useNavigate()
   const handleClick = () => {
     console.log("hi")
-    getExp();
+    // getExp();
     setBar(bar+20)
-    setExp(exp + 20)
-    if (bar >=100){
+    if (bar + 20>=100){
       setBar(0)
     }
+    setExp(exp + 20)
   }
 
+  // reroutes when geus is max level
+  useEffect(() => {
+    if (exp >= 300) {
+      navigate("/end");
+    }
+  }, [exp, navigate]);
+  
   useEffect(() => {
 
     if (exp >= 100 && exp < 200) {
@@ -77,7 +85,13 @@ export default function Goose() {
         socket.disconnect();
       };
     }, []);
-
+    const handlePostData = async () => {
+      const response = await axios.post('http://127.0.0.1:3000/api/post-data',{
+        exp: exp,
+        lvl: level
+      })
+      console.log(response.data)
+    }
   return (
     <main className="w-full min-h-screen bg-sky-200 flex items-center justify-center p-4">
       <div className="border-black border-4 bottom-0 left-0 h-[250px] w-[550px] absolute bg-white z-10 text-black">
@@ -97,10 +111,10 @@ export default function Goose() {
         
         {/* Navigation */}
         <nav className="absolute top-4 right-4 flex gap-4 ">
-          <Link to="/" className="px-4 py-2 bg-black text-white font-pixel rounded-lg hover:bg-gray-800 transition-colors">
-            HOME
+          <Link to="/goose" className="px-4 py-2 bg-black text-white font-pixel rounded-lg hover:bg-gray-800 transition-colors">
+            GOOSE
           </Link>
-          <Link to="/map" className="px-4 py-2 bg-black text-white font-pixel rounded-lg hover:bg-gray-800 transition-colors">
+          <Link to="/map" className="px-4 py-2 bg-black text-white font-pixel rounded-lg hover:bg-gray-800 transition-colors" onClick={handlePostData}>
             MAP
           </Link>
         </nav>
