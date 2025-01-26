@@ -62,7 +62,7 @@ export default function CameraScreen() {
           // );
           
           try {
-              const response = await axios.post('https://geesemongo.yashasjindal.com:3000/api/classify', 
+              const response = await axios.post('http://geesemongo.yashasjindal.com:3000/api/classify', 
                 formData,  
                 {
                   headers: {
