@@ -7,7 +7,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import axios from 'axios';
 import { Link } from 'react-router';
 const INITIAL_CENTER: [number, number] = [-80.5204,43.4643];
-const INITIAL_ZOOM: number = 11;
+const INITIAL_ZOOM: number = 15;
 const BASE_URL: string = 'https://vancouver-litterbin-map-api.vercel.app';
 
 interface TrashcanData {
@@ -37,7 +37,7 @@ export default function Map() {
         zoom: zoom,
       });
       new mapboxgl.Marker({ color: 'red' }) // You can customize the marker color here
-      .setLngLat( [-80.5449, 43.4723])
+      .setLngLat( [-80.5405, 43.4704])
       .setPopup(new mapboxgl.Popup().setHTML('<h3>University of Waterloo</h3>')) // Add popup
       .addTo(mapRef.current);
 

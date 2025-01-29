@@ -28,22 +28,30 @@ export default function Goose() {
   
   const [image, setImage] = useState("./robot.png");
   const getExp = async () => {
-    const response = await axios.get('http://127.0.0.1:3000/api/get-data')
+  const response = await axios.get('http://127.0.0.1:5000/api/get-data')
     console.log(response.data)
     setExp(response.data.exp)
     setLevel(response.data.level)
-    // setExp(response.data)
+    if (response.data.exp == 100 || response.data.exp == 200) {
+      setBar(0)
+    } else if (response.data.exp > 200) {
+      setBar(response.data.exp - 200)
+    } else if (response.data.exp > 100) {
+      setBar(response.data.exp - 100)
+    }
+    
   }
   const navigate = useNavigate()
-  const handleClick = () => {
-    console.log("hi")
-    getExp();
-    setBar(bar+20)
-    if (bar + 20>=100){
-      setBar(0)
-    }
-    setExp(exp + 20)
-  }
+  // const handleClick = () => {
+  //   console.log("hi")
+  //   getExp();
+  //   setBar(bar+20)
+  //   if (bar + 20>=100){
+  //     setBar(0)
+  //   }
+  //   setExp(exp + 20)
+  // }
+
   useEffect(() => {
     setHasPrediction(false)
   },[])
@@ -55,7 +63,6 @@ export default function Goose() {
   }, [exp, navigate]);
 
   useEffect(() => {
-
     if (exp >= 100 && exp < 200) {
       setLevel(50); // Set level to 50
       setImage("./robot_goose.png")
@@ -73,22 +80,26 @@ export default function Goose() {
     useEffect(() => {
       
       // Connect to the WebSocket server
-      const socket = io('http://127.0.0.1:3000');  // Replace with your server URL
+      const socket = io('http://127.0.0.1:5000');  // Replace with your server URL
   
       // Set the socket instance in state
   
       // Listen for messages from the server
       socket.on('send-new-data', (data: data) => {
         console.log('Received message:', data);
-        setExp(data.exp);  // Update the state with received message
-        setLevel(data.lvl);
+        // setExp(data.exp);  // Update the state with received message
+        // setLevel(data.lvl);
         if (data.label == "goose"){
           setPrediction("It's a Goose!");
+          // setBar((bar + 20))
+        }else if (data.label == "baby goose") {
+          // setBar((bar + 40))
+          setPrediction("It's a baby goose!")
         } else {
-          setPrediction("It's not a Goose!");
+          setPrediction("It's not a goose!");
         }
         setHasPrediction(true)
-      });
+      }, );
   
     
       // Clean up when the component unmounts
@@ -96,13 +107,14 @@ export default function Goose() {
         socket.disconnect();
       };
     }, []);
-    const handlePostData = async () => {
-      const response = await axios.post('http://127.0.0.1:3000/api/post-data',{
-        exp: exp,
-        lvl: level
-      })
-      console.log(response.data)
-    }
+    
+    // const handlePostData = async () => {
+    //   const response = await axios.post('http://127.0.0.1:3000/api/post-data',{
+    //     exp: exp,
+    //     lvl: level
+    //   })
+    //   console.log(response.data)
+    // }
   return (
     <main className="w-full min-h-screen bg-sky-200 flex items-center justify-center p-4">
       <div className="border-black border-4 bottom-0 left-0 h-[250px] w-[550px] absolute bg-white z-10 text-black">
@@ -125,7 +137,9 @@ export default function Goose() {
           <Link to="/goose" className="px-4 py-2 bg-black text-white font-pixel rounded-lg hover:bg-gray-800 transition-colors">
             GOOSE
           </Link>
-          <Link to="/map" className="px-4 py-2 bg-black text-white font-pixel rounded-lg hover:bg-gray-800 transition-colors" onClick={handlePostData}>
+          <Link to="/map" className="px-4 py-2 bg-black text-white font-pixel rounded-lg hover:bg-gray-800 transition-colors" 
+          // onClick={handlePostData}
+          >
             MAP
           </Link>
           
@@ -137,7 +151,9 @@ export default function Goose() {
         { hasPrediction ? 
         <div className="bg-white border-4 border-black text-black text-center rounded-md">{prediction}</div> : null }
 
-        <div className=" hover:scale-125" onClick={handleClick}>
+        <div className=" hover:scale-125" 
+        // onClick={handleClick}
+        >
           <img
             src={image} 
             className="w-80 h-80"
