@@ -1,6 +1,6 @@
 
 import { Link, useNavigate } from "react-router-dom";  // Import from react-router-dom for correct routing
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { motion, AnimatePresence } from "framer-motion"
 import { io } from 'socket.io-client';
